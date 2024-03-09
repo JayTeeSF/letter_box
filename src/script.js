@@ -32,16 +32,23 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   // Function to filter second words based on the criteria.
-  function secondWordFilter(word, lastLetter, remainingLetters, forbiddenSequences) {
+  function secondWordFilter(word, lastLetter, remainingLetters, forbiddenSequences, letters) {
     const wordLetters = word.split('');
-    return wordLetters[0] === lastLetter && 
-      wordLetters.every(letter => remainingLetters.includes(letter) || letter === lastLetter) &&
-      !forbiddenSequences.some(seq => word.includes(seq));
+    // Ensure the word starts with the last letter of the found word and every letter is in the letters set
+    if (wordLetters[0] !== lastLetter || !wordLetters.every(letter => letters.includes(letter))) return false;
+    // Check against forbidden sequences
+    if (forbiddenSequences.some(seq => word.includes(seq))) return false;
+    // Ensure all remaining letters are included in the second word
+    for (const letter of remainingLetters) {
+      if (!word.includes(letter)) return false;
+    }
+    return true;
   }
 
   function filterAndPairWords(sets, forbiddenSequences, dictionary) {
+    const letters = sets.join('').split('');
     let filteredWords = filterWords(sets, forbiddenSequences);
-    // Trim to top 500 results and reverse
+    // Sort here if needed (filterWords should already sort them)
     filteredWords = filteredWords.slice(0, 500).reverse();
 
     const outputPairs = {};
@@ -52,14 +59,15 @@ document.addEventListener("DOMContentLoaded", function() {
       const lastLetter = foundWord[foundWord.length - 1];
       const remainingLetters = sets.join('').split('').filter(l => !foundWord.slice(0, -1).includes(l));
 
-      const matches = dictionary.filter(word => secondWordFilter(word, lastLetter, remainingLetters, forbiddenSequences));
+      const matches = dictionary
+        .filter(word => secondWordFilter(word, lastLetter, remainingLetters, forbiddenSequences, letters))
+        .sort((a, b) => uniqueChars(b).length - uniqueChars(a).length || a.localeCompare(b)); // Sort matches like filterWords
 
       if (matches.length > 0) {
         outputPairs[foundWord] = matches;
       }
 
       // Optional: break if outputPairs reach MAX_RESULTS, adjust according to your needs
-      // if (Object.keys(outputPairs).length >= MAX_RESULTS) break;
     }
 
     return outputPairs;
@@ -82,7 +90,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const pairs = filterAndPairWords(sets, forbiddenSequences, dictionary);
 
     outputDiv.innerHTML = `<div class='text-green-500'><p>Filtered Words and Pairs:</p><ul>` + 
-      Object.entries(pairs).map(([foundWord, secondWords]) => `<li>${foundWord}: ${secondWords.join(', ')}</li>`).join("") + 
-      "</ul></div>";
+      Object.entries(pairs).map(([foundWord, secondWords]) =>
+        `<li>${foundWord}: ${secondWords.join(', ')}</li>`).join("") +
+        "</ul></div>";
   });
 });
