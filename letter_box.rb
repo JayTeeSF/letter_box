@@ -81,7 +81,7 @@ if ARGV.length != 4
 end
 
 # Usage
-dict_path = '/Users/jthomas/dev/jayteesf/config/words.txt'
+dict_path = './words.txt'
 letter_sets = ARGV
 filter = DictionaryFilter.new(dict_path, letter_sets)
 filtered_words = filter.filter_words
