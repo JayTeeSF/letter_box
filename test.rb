@@ -1,5 +1,8 @@
+#!/usr/bin/env ruby
+
 # Specify the path to the system's dictionary file
-dict_path = '/usr/share/dict/words'
+dict_path = '/Users/jthomas/dev/jayteesf/config/words.txt'
+
 
 # Define the letters and expanded rules for forbidden sequences and repetitions
 mandatory_letters = 'spaint'
