@@ -50,19 +50,15 @@ class DictionaryFilter
   def automated_filtering(filtered_words)
     output_pairs = []
     filtered_words.each do |word|
-      warn("word: #{word}")
+      $stderr.print('.')
       break if word.size == 1
       matches = filter_words_that_start_with(word)
       if matches.any?
         matches.first(WORDS_TO_SHOW).each { |match| output_pairs << [word, match] }
-        warn "Chosen word: #{word}"
-        #puts 'Remaining output:'
-        #matches.first(WORDS_TO_SHOW).each { |word| puts word }
         break output_pairs.size > PAIRS_TO_SHOW
-      else
-        warn "Skip word: #{word}"
       end
     end
+    warn "\n"
     output_pairs
   end
 end
@@ -81,7 +77,7 @@ filtered_words = filter.filter_words
 reversed_filtered_words = []
 filtered_words.first(WORDS_TO_SHOW).reverse.each { |word| reversed_filtered_words << word }
 
-puts "Top #{WORDS_TO_SHOW} filtered words:"
-reversed_filtered_words.each { |word| puts word }
+# puts "Top #{WORDS_TO_SHOW} filtered words:"
+# reversed_filtered_words.each { |word| puts word }
 
 filter.automated_filtering(reversed_filtered_words).each { |pair| puts pair.join(', ') }
