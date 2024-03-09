@@ -35,7 +35,8 @@ class DictionaryFilter
 
   def filter_words_that_start_with(input_word)
     last_letter = input_word[-1]
-    remaining_letters = @letters - input_word.chars[1..-1]
+    remaining_letters = @letters - input_word.chars[0..-2]
+    warn("\nremaining letters:\n\t#{remaining_letters}\n")
 
     File.readlines(@dict_path).map(&:strip).select do |word|
       word.start_with?(last_letter) &&
@@ -53,13 +54,15 @@ class DictionaryFilter
 
       matches = filter_words_that_start_with(input_word)
       puts 'Filtered words based on your input:'
-      matches.first(100).each { |word| puts word }
+      matches.first(WORDS_TO_SHOW).each { |word| puts word }
 
       puts 'Press Enter to input a new word or Ctrl-C to exit.'
       gets
     end
   end
 end
+
+WORDS_TO_SHOW = 300
 
 # Usage
 dict_path = '/Users/jthomas/dev/jayteesf/config/words.txt'
@@ -68,7 +71,7 @@ filter.prompt_for_letter_sets
 warn "\nForbidden sequences:\n\t#{filter.forbidden_sequences}\n\n"
 filtered_words = filter.filter_words
 
-puts 'Top 100 filtered words:'
-filtered_words.first(100).each { |word| puts word }
+puts "Top #{WORDS_TO_SHOW} filtered words:"
+filtered_words.first(WORDS_TO_SHOW).each { |word| puts word }
 
 filter.prompt_for_words_and_filter(filtered_words)
