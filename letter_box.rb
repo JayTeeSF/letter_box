@@ -1,32 +1,70 @@
 #!/usr/bin/env ruby
 
-# Specify the path to the system's dictionary file
-dict_path = '/Users/jthomas/dev/jayteesf/config/words.txt'
+class DictionaryFilter
+  attr_reader :dict_path
 
+  def initialize(dict_path)
+    @dict_path = dict_path
+    @letters = []
+    @forbidden_sequences = []
+  end
 
-# Define the letters and expanded rules for forbidden sequences and repetitions
-mandatory_letters = 'spaint'
-optional_letters = 'ubeljm'
-forbidden_sequences = ['tm', 'pa', 'ai', 'lj', 'jn', 'ub', 'be', 'pp', 'aa', 'ii', 'tt', 'mm', 'll', 'jj', 'nn', 'uu', 'bb', 'ee']
+  def prompt_for_letter_sets
+    4.times do |i|
+      puts "Enter set #{i + 1} of 3 letters (e.g., abc):"
+      set = gets.strip
+      @letters += set.chars
+      generate_forbidden_sequences(set)
+    end
+    @letters.uniq!
+  end
 
-# Function to check if a word violates any forbidden sequence or repetition
-def violates_constraints?(word, forbidden_sequences)
-  forbidden_sequences.any? { |seq| word.include?(seq) } ||
-    word.chars.chunk_while { |i, j| i == j }.any? { |chunk| chunk.length > 1 }
-end
+  def generate_forbidden_sequences(set)
+    set.chars.permutation(2).each { |seq| @forbidden_sequences << seq.join }
+    @forbidden_sequences.uniq!
+  end
 
-# Read words from dictionary and filter based on criteria
-File.open(dict_path) do |file|
-  file.each do |line|
-    word = line.strip.downcase # Remove newline and make lowercase for comparison
-    
-    # Check if the word starts with 's', includes mandatory letters, does not violate constraints
-    if word.start_with?('s') &&
-       mandatory_letters.chars.all? { |char| word.include?(char) } &&
-       optional_letters.chars.any? { |char| word.include?(char) } &&
-       !violates_constraints?(word, forbidden_sequences)
+  def filter_words
+    File.readlines(@dict_path).map(&:strip).select do |word|
+      word.chars.all? { |char| @letters.include?(char) } &&
+        !@forbidden_sequences.any? { |seq| word.include?(seq) }
+    end.sort_by(&:length).reverse
+  end
 
-      puts word
+  def filter_words_that_start_with(input_word)
+    last_letter = input_word[-1]
+    remaining_letters = @letters - input_word.chars
+
+    File.readlines(@dict_path).map(&:strip).select do |word|
+      word.start_with?(last_letter) &&
+        remaining_letters.all? { |char| word.include?(char) } &&
+        !@forbidden_sequences.any? { |seq| word.include?(seq) }
+    end.sort_by(&:length).reverse
+  end
+
+  def prompt_for_words_and_filter(filtered_words)
+    loop do
+      puts 'Enter a word, or just press Enter to continue:'
+      input_word = gets.strip
+      break if input_word.empty?
+
+      matches = filter_words_that_start_with(input_word)
+      puts 'Filtered words based on your input:'
+      matches.first(100).each { |word| puts word }
+
+      puts 'Press Enter to input a new word or Ctrl-C to exit.'
+      gets
     end
   end
 end
+
+# Usage
+dict_path = '/Users/jthomas/dev/jayteesf/config/words.txt'
+filter = DictionaryFilter.new(dict_path)
+filter.prompt_for_letter_sets
+filtered_words = filter.filter_words
+
+puts 'Top 100 filtered words:'
+filtered_words.first(100).each { |word| puts word }
+
+filter.prompt_for_words_and_filter(filtered_words)
