@@ -48,5 +48,3 @@ document.addEventListener("DOMContentLoaded", function() {
             "</ul></div>";
     });
 });
-
-const dictionary = ['apple', 'banana', 'orange', 'grape', 'melon', 'berry', 'lemon']; // Example dictionary
