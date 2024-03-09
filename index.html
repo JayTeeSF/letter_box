@@ -10,6 +10,13 @@
 
 <div class="container mx-auto p-4">
     <h1 class="text-2xl font-bold mb-4">Letter Box Solver</h1>
+
+    <!-- Add this section for demo buttons -->
+    <div class="mt-4">
+      <button class="demoButton bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" data-set="ube tms pai ljn">Demo 1</button>
+      <button class="demoButton bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" data-set="wbs klz ady ecr">Demo 2</button>
+      <button class="demoButton bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" data-set="eif onu clm baq">Demo 3</button>
+    </div>
     
     <div id="letterSetsInput" class="space-y-2">
         <input type="text" class="input" placeholder="Set 1 (e.g., abc)">
@@ -17,7 +24,7 @@
         <input type="text" class="input" placeholder="Set 3 (e.g., ghi)">
         <input type="text" class="input" placeholder="Set 4 (e.g., jkl)">
     </div>
-    
+
     <button id="solveButton" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
         Solve
     </button>
@@ -29,5 +36,19 @@
 
 <script src="src/dictionary.js"></script>
 <script src="src/script.js"></script>
+<script>
+document.querySelectorAll('.demoButton').forEach(button => {
+    button.addEventListener('click', function() {
+        const dataSet = this.getAttribute('data-set').split(' ');
+        const inputs = document.querySelectorAll('.input');
+        if (dataSet.length === inputs.length) {
+            dataSet.forEach((set, index) => {
+                inputs[index].value = set;
+            });
+            document.getElementById('solveButton').click();
+        }
+    });
+});
+</script>
 </body>
 </html>
