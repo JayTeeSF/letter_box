@@ -6,4 +6,4 @@ time ./letter_box.rb wbs klz ady ecr # => backwards, sleazy # 29.6s thu Mar 7
 
 time ./letter_box.rb eif onu clm baq # => flanque, embolic 20.121 tue Mar 5
 
-time ./letter_box.rb ltg eud orh baf # => ..., ... 51.700s Sat Mar 9
+time ./letter_box.rb ltg eud orh baf # => beghard, doubtful 51.700s Sat Mar 9
